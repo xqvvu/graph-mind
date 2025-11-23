@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "antfu.pnpm-catalog-lens",
+    "editorconfig.editorconfig",
+    "antfu.iconify",
+    "loccy.loccy",
+    "bradlc.vscode-tailwindcss"
+  ]
+}

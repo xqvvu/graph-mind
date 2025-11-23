@@ -1,0 +1,84 @@
+name: graph-mind
+
+services:
+  postgres:
+    image: postgres:18.1-trixie
+    ports:
+      - 5432:5432
+    environment:
+      TZ: Asia/Shanghai
+      POSTGRES_DB: gd
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+    # NOTE: use tmpfs for test
+    # tmpfs:
+    #   - /var/lib/postgresql
+    volumes:
+      - ./.docker/postgres:/var/lib/postgresql
+    networks:
+      - gd
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8.4-bookworm
+    ports:
+      - 6379:6379
+    # NOTE: use tmpfs for test
+    # tmpfs:
+    #   - /data
+    volumes:
+      - ./.docker/redis/data:/data
+    command: ['redis-server', '--requirepass', 'mypassword']
+    networks:
+      - gd
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'mypassword', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  neo4j:
+    image: neo4j:5.26-community-bullseye
+    ports:
+      - 7474:7474 # HTTP 访问端口（浏览器可视化界面）
+      - 7687:7687 # Bolt 协议端口（应用程序连接核心端口）
+    environment:
+      TZ: Asia/Shanghai
+      NEO4J_AUTH: neo4j/mypassword
+      NEO4J_dbms_default__database: graph-mind
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 1g
+    # NOTE: use tmpfs for test（测试环境可启用，避免持久化数据）
+    # tmpfs:
+    #   - /data
+    volumes:
+      # 数据持久化目录（与其他服务统一放在 .docker 下）
+      - ./.docker/neo4j/data:/data
+      # 插件目录（若启用 APOC 等插件，会自动挂载）
+      - ./.docker/neo4j/plugins:/plugins
+      # 日志目录（便于问题排查）
+      - ./.docker/neo4j/logs:/logs
+    networks:
+      - gd
+    healthcheck:
+      test:
+        - CMD
+        - cypher-shell
+        - -u
+        - neo4j
+        - -p
+        - mypassword
+        - MATCH (n) RETURN count(n) AS count
+
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  gd:
+    driver: bridge

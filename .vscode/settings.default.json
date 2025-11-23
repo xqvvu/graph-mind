@@ -1,0 +1,30 @@
+{
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit",
+    "source.action.useSortedAttributes.biome": "explicit",
+    "source.action.useSortedProperties.biome": "explicit"
+  },
+  "[javascript][typescript][typescriptreact][css][json][jsonc]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "css.lint.unknownAtRules": "ignore",
+
+  "loccy.sourceLocale": "zh-CN",
+  "loccy.annotations.previewLocale": "zh-CN",
+
+  "todo-tree.filtering.excludeGlobs": ["openspec"],
+  "todo-tree.highlights.enabled": false,
+
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

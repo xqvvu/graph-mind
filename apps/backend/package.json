@@ -1,0 +1,45 @@
+{
+  "name": "@gd/backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env --watch=.env src/main.ts",
+    "build": "tsdown",
+    "start": "node --env-file=.env dist/main.mjs",
+    "check": "biome check --write .",
+    "test": "vitest run",
+    "test:unit": "vitest run --project backend:unit",
+    "test:integration": "vitest run --project backend:integration",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@gd/ky": "workspace:*",
+    "@gd/shared": "workspace:*",
+    "@hono/node-server": "^1.19.6",
+    "@hono/zod-validator": "^0.7.5",
+    "@logtape/file": "^1.2.0",
+    "@logtape/logtape": "^1.2.0",
+    "@logtape/pretty": "^1.2.0",
+    "ai": "^5.0.100",
+    "better-auth": "^1.4.1",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.19",
+    "drizzle-orm": "^0.44.7",
+    "es-toolkit": "^1.42.0",
+    "hono": "^4.10.6",
+    "postgres": "^3.4.7",
+    "redis": "^5.10.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@types/node": "catalog:",
+    "drizzle-kit": "^0.31.7",
+    "drizzle-seed": "^0.3.1",
+    "tsdown": "^0.16.6",
+    "tsx": "^4.20.6",
+    "typescript": "catalog:",
+    "vite-tsconfig-paths": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,40 @@
+{
+	"root": false,
+	"$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
+	"extends": "//",
+	"files": {
+		"ignoreUnknown": false,
+		"includes": ["./**", "!**/src/routeTree.gen.ts", "!**/src/styles.css"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on",
+				"useSortedAttributes": "on",
+				"useSortedProperties": "on"
+			}
+		}
+	},
+	"linter": {
+		"rules": {
+			"style": {
+				"useComponentExportOnlyModules": "off"
+			}
+		},
+		"domains": {
+			"react": "all"
+		}
+	},
+	"css": {
+		"formatter": {
+			"enabled": true
+		},
+		"parser": {
+			"tailwindDirectives": true
+		}
+	}
+}

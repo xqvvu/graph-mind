@@ -1,0 +1,24 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  '@biomejs/biome': 2.3.7
+  '@types/node': ^24.10.1
+  lefthook: ^2.0.4
+  turbo: ^2.6.1
+  typescript: ^5.9.3
+  vite-tsconfig-paths: ^5.1.4
+  vitest: ^4.0.13
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@parcel/watcher'
+  - '@scarf/scarf'
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - better-sqlite3
+  - esbuild
+  - lefthook
+  - sharp
+  - unrs-resolver

@@ -1,0 +1,25 @@
+{
+  "name": "@gd/shared",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "check": "biome check --write .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.44.7",
+    "drizzle-zod": "^0.8.3",
+    "es-toolkit": "^1.42.0",
+    "uuid": "^13.0.0",
+    "vite-tsconfig-paths": "catalog:",
+    "zod": "^4.1.12"
+  }
+}

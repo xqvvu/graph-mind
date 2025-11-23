@@ -1,0 +1,130 @@
+import { ErrorCode } from "@gd/shared/lib/error-codes";
+import type { Result } from "@gd/shared/types/result";
+import { isNil } from "es-toolkit";
+import type { Context } from "hono";
+import { SystemException } from "@/exceptions/system-exception";
+
+export const R = {
+  raw<T = unknown>(params: {
+    ok: boolean;
+    data?: T;
+    errcode?: number;
+    errmsg?: string;
+  }): Result<T> {
+    const { ok, data, errcode = -1, errmsg = "error" } = params;
+    if (ok) {
+      return {
+        ok,
+        data,
+        code: 0,
+        message: "success",
+      };
+    }
+
+    return {
+      ok,
+      errcode,
+      errmsg,
+    };
+  },
+
+  ok<T = unknown>(c: Context<Env>, data?: T) {
+    return c.json(this.raw({ ok: true, data }));
+  },
+
+  fail(c: Context<Env>, params?: { errcode?: number; errmsg?: string }) {
+    const { errcode = -1, errmsg = "error" } = params ?? {};
+    return c.json(this.raw({ ok: false, errcode, errmsg }));
+  },
+};
+
+type CloneAndFormatJSONResponseInit =
+  | {
+      mode: "append";
+      status?: number | undefined;
+      statusText?: string | undefined;
+      headers?:
+        | [string, string][]
+        | Record<string, string>
+        | Headers
+        | undefined;
+    }
+  | {
+      mode: "overwrite";
+      headers: [string, string][] | Record<string, string> | Headers;
+      status?: number | undefined;
+      statusText?: string | undefined;
+    }
+  | {
+      status?: number | undefined;
+      statusText?: string | undefined;
+      mode?: undefined;
+    };
+
+export async function cloneAndFormatJSONResponse(
+  response: Response,
+  init?: CloneAndFormatJSONResponseInit,
+): Promise<Response> {
+  try {
+    const clonedResponse = response.clone();
+
+    let headers: Headers;
+    if (init?.mode === "append") {
+      headers = appendHeaders(response.headers, init.headers);
+    } else if (init?.mode === "overwrite") {
+      headers = new Headers(init.headers);
+    } else {
+      headers = new Headers(response.headers);
+    }
+
+    const data = await clonedResponse.json();
+    return new Response(
+      isNil(data) ? null : JSON.stringify(R.raw({ ok: true, data })),
+      {
+        headers,
+        status: isNil(init?.status) ? response.status : init.status,
+        statusText: isNil(init?.statusText)
+          ? response.statusText
+          : init.statusText,
+      },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown error";
+    throw new SystemException({
+      errcode: ErrorCode.INTERNAL_ERROR,
+      message: `Clone JSON response failed: ${message}`,
+    });
+  }
+}
+
+export function appendHeaders(headers: Headers, appendHeaders?: HeadersInit) {
+  const h = new Headers(headers);
+  if (isNil(appendHeaders)) return h;
+
+  if (Array.isArray(appendHeaders)) {
+    for (const [key, value] of appendHeaders) {
+      h.append(key, value);
+    }
+    return h;
+  }
+
+  if (appendHeaders instanceof Headers) {
+    for (const [key, value] of appendHeaders.entries()) {
+      h.append(key, value);
+    }
+    return h;
+  }
+
+  if (typeof appendHeaders === "object") {
+    for (const [key, value] of Object.entries(appendHeaders)) {
+      h.append(key, value);
+    }
+    return h;
+  }
+
+  throw new SystemException({
+    errcode: ErrorCode.INTERNAL_ERROR,
+    message:
+      "TypeError that `appendHeaders` is not compatible with its definition",
+  });
+}

@@ -1,0 +1,50 @@
+import { ErrorCode } from "@gd/shared/lib/error-codes";
+import type { IUser } from "@gd/shared/validate/users";
+import { isNil, isNotNil } from "es-toolkit";
+import { BusinessException } from "@/exceptions/business-exception";
+import { getLogger, mod } from "@/infra/logger";
+import { getUserRepository } from "@/modules/users/users.repository";
+import type { IUserRepository } from "@/modules/users/users.repository.interface";
+
+export class UserService {
+  constructor(private userRepository: IUserRepository) {}
+
+  async selectAllUsers(): Promise<IUser[]> {
+    const logger = getLogger(mod.users);
+    logger.debug`Fetching all users`;
+    const users = await this.userRepository.findMany();
+    logger.debug`Found ${users.length} users`;
+    return users;
+  }
+
+  async selectUserById(id: string): Promise<IUser> {
+    const logger = getLogger(mod.users);
+    logger.debug`Fetch user by id ${id}`;
+    const user = await this.userRepository.findById(id);
+
+    if (isNil(user)) {
+      logger.debug`User not found: ${id}`;
+      throw new BusinessException(404, {
+        errcode: ErrorCode.USER.NOT_FOUND,
+        message: "User not found",
+      });
+    }
+
+    logger.debug`User found: ${id}`;
+    return user;
+  }
+}
+
+let userService: UserService | null = null;
+export function getUserService(): UserService {
+  if (isNil(userService)) {
+    userService = new UserService(getUserRepository());
+  }
+  return userService;
+}
+
+export function destroyUserService() {
+  if (isNotNil(userService)) {
+    userService = null;
+  }
+}

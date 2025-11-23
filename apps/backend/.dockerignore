@@ -1,0 +1,15 @@
+node_modules
+dist
+.next
+.turbo
+.docker
+logs
+*.log
+.env
+.env.*
+!.env.template
+README.md
+__tests__
+coverage
+*.test.ts
+*.spec.ts

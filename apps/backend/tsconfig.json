@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+
+      "@gd/shared/*": ["../../packages/shared/src/*"],
+      "@gd/ky/*": ["../../packages/ky/src/*"],
+
+      "#test/*": ["test/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}
