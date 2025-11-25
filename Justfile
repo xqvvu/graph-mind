@@ -61,8 +61,8 @@ build-backend:
 
 # Run biome check and fix
 [group('quality')]
-check-biome:
-    pnpm run check:biome
+check:
+    pnpm run check
 
 ##################################################
 # Docker Compose

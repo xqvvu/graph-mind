@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help dev dev-backend install clean build build-backend check-biome compose-up compose-stop compose-down compose-logs compose-clean test-compose-up test-compose-down test-compose-clean test-unit test-integration test test-watch test-ui test-coverage docker-build-backend docker-run-backend docker-stop-backend docker-logs-backend docker-clean db-generate db-migrate backend-auth-secret backend-drizzle-generate backend-drizzle-migrate backend-start script-clean-node-modules script-verify-error-translations setup reset
+.PHONY: help dev dev-backend install clean build build-backend check compose-up compose-stop compose-down compose-logs compose-clean test-compose-up test-compose-down test-compose-clean test-unit test-integration test test-watch test-ui test-coverage docker-build-backend docker-run-backend docker-stop-backend docker-logs-backend docker-clean db-generate db-migrate backend-auth-secret backend-drizzle-generate backend-drizzle-migrate backend-start script-clean-node-modules script-verify-error-translations setup reset
 
 # Variables
 DOCKER_COMPOSE_DIR := apps/backend
@@ -51,8 +51,8 @@ build-backend: ## Build backend app
 # Quality
 ##################################################
 
-check-biome: ## Run biome check and fix
-	pnpm run check:biome
+check: ## Run biome check and fix
+	pnpm run check
 
 ##################################################
 # Docker Compose
