@@ -37,6 +37,7 @@ yarn-error.log*
 .DS_Store
 *.pem
 .vscode/settings.json
+.idea
 
 # Docker Compose
 .docker
