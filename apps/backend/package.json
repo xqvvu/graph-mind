@@ -13,7 +13,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2.0.50",
+    "@ai-sdk/anthropic": "^2.0.52",
     "@graph-mind/ky": "workspace:*",
     "@graph-mind/shared": "workspace:*",
     "@hono/node-server": "^1.19.6",
@@ -21,8 +21,8 @@
     "@logtape/file": "^1.2.2",
     "@logtape/logtape": "^1.2.2",
     "@logtape/pretty": "^1.2.2",
-    "ai": "^5.0.104",
-    "better-auth": "^1.4.3",
+    "ai": "^5.0.105",
+    "better-auth": "^1.4.4",
     "bottleneck": "^2.19.5",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
@@ -38,7 +38,7 @@
     "@types/node": "catalog:",
     "drizzle-kit": "^0.31.7",
     "tsdown": "^0.16.8",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "catalog:",
     "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"
