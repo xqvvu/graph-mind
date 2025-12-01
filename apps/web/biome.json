@@ -20,6 +20,9 @@
       "react": "all"
     },
     "rules": {
+      "a11y": {
+        "useSemanticElements": "off"
+      },
       "style": {
         "useSelfClosingElements": "on",
         "useComponentExportOnlyModules": "off",
