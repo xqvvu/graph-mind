@@ -28,7 +28,7 @@ export async function destroy() {
 
 async function shutdown() {
   const logger = getLogger(root);
-  logger.info`Gracefully shutdown`;
+  logger.info("Gracefully shutdown");
 
   await destroy();
   process.exit(0);

@@ -19,10 +19,10 @@ export async function configure() {
       maxLifetimeSeconds: config.pgvectorPoolMaxLifetimeSeconds,
     });
 
-    let clinet: PoolClient | null = null;
+    let client: PoolClient | null = null;
     try {
-      clinet = await pool.connect();
-      await clinet.query("SELECT 1");
+      client = await pool.connect();
+      await client.query("SELECT 1");
       getLogger(infra.pgvector).info("PgVector is ready");
     } catch (error) {
       const message = isError(error) ? error.message : "Unknown error";
@@ -32,7 +32,7 @@ export async function configure() {
         message: `Failed to connect to PgVector: ${message}`,
       });
     } finally {
-      clinet?.release();
+      client?.release();
     }
   }
 }

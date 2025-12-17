@@ -28,10 +28,10 @@ SET search_path = ag_catalog, "$user", public;`;
     conn.query(sql);
   });
 
-  let clinet: PoolClient | null = null;
+  let client: PoolClient | null = null;
   try {
-    clinet = await pool.connect();
-    await clinet.query("SELECT 1");
+    client = await pool.connect();
+    await client.query("SELECT 1");
     getLogger(infra.age).info("AGE is ready");
   } catch (error) {
     const message = isError(error) ? error.message : "Unknown error";
@@ -41,7 +41,7 @@ SET search_path = ag_catalog, "$user", public;`;
       message: `Failed to connect to AGE: ${message}`,
     });
   } finally {
-    clinet?.release();
+    client?.release();
   }
 }
 
