@@ -52,7 +52,7 @@ export async function configure() {
         sinks: isDevelopmentNodeEnv ? ["console"] : [],
       },
       {
-        category: ["graph-mind"],
+        category: ["app"],
         lowestLevel: isDevelopmentNodeEnv ? "debug" : "info",
         sinks: ["console"],
       },

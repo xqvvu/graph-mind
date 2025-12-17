@@ -38,6 +38,7 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
 
   // #region ---------------------routes----------------------------//
   app.get("/api/healthz", (c) => R.ok(c, "ok"));
+  app.get("/api/ping", (c) => R.ok(c, "pong"));
 
   app.route("/api", auth);
   app.route("/api", users);

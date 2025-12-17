@@ -1,6 +1,5 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { isNil, isNotNil } from "es-toolkit";
-import { getLogger, infra } from "@/infra/logger";
 import { AWSS3StorageAdapter } from "@/infra/storage/adapters/aws-s3.adapter";
 import { MemoryStorageAdapter } from "@/infra/storage/adapters/memory.adapter";
 import { MinioStorageAdapter } from "@/infra/storage/adapters/minio.adapter";
@@ -13,7 +12,6 @@ let privateStorageClient: IObjectStorage | null = null;
 
 export async function configure() {
   if (isNil(privateStorageClient)) {
-    const storageLogger = getLogger(infra.storage);
     const config = getConfig();
 
     const publicStorageBucketName = config.objectStoragePublicBucketName;
@@ -91,13 +89,7 @@ export async function configure() {
       }
     }
 
-    const [privateStorage, publicStorage] = await Promise.all([
-      privateStorageClient.ensureBucket(),
-      publicStorageClient.ensureBucket(),
-    ]);
-
-    storageLogger.info(`Ensured storage bucket ${privateStorage.bucket} exists`);
-    storageLogger.info(`Ensured storage bucket ${publicStorage.bucket} exists`);
+    await Promise.all([privateStorageClient.ensureBucket(), publicStorageClient.ensureBucket()]);
   }
 }
 

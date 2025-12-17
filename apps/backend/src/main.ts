@@ -3,18 +3,26 @@ import { createApp } from "@/app";
 import { configure as age, destroyAgePool } from "@/infra/age";
 import { configure as database, destroyDb } from "@/infra/database";
 import { destroyLogger, getLogger, configure as logger, root } from "@/infra/logger";
-import { destroyRdb, configure as redis } from "@/infra/redis";
+import { destroyPgVectorPool, configure as pgvector } from "@/infra/pgvector";
+import { destroyRedis, configure as redis } from "@/infra/redis";
 import { destroyStorage, configure as storage } from "@/infra/storage";
 import { configure as betterAuth } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 
 export async function prepare() {
+  getConfig();
   await logger();
-  await Promise.all([database(), age(), redis(), storage(), betterAuth()]);
+  await Promise.all([database(), age(), pgvector(), redis(), storage(), betterAuth()]);
 }
 
 export async function destroy() {
-  await Promise.all([destroyDb(), destroyAgePool(), destroyRdb(), destroyStorage()]);
+  await Promise.all([
+    destroyDb(),
+    destroyAgePool(),
+    destroyPgVectorPool(),
+    destroyRedis(),
+    destroyStorage(),
+  ]);
   await destroyLogger();
 }
 

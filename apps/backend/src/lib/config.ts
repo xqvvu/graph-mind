@@ -16,6 +16,7 @@ function interpolate(basicConfig: BasicConfigInit): InterpolatedConfigInit {
       "BETTER_AUTH_URL",
       "OBJECT_STORAGE_ENDPOINT",
       "AGE_URL",
+      "PGVECTOR_URL",
     ]),
   };
 
@@ -99,6 +100,12 @@ export class Config {
   readonly agePoolIdleTimeoutMillis: number;
   readonly agePoolMaxLifetimeSeconds: number;
 
+  // PgVector
+  readonly pgvectorUrl: string;
+  readonly pgvectorPoolMaxConnections: number;
+  readonly pgvectorPoolIdleTimeoutMillis: number;
+  readonly pgvectorPoolMaxLifetimeSeconds: number;
+
   // Redis
   readonly redisUrl: string;
 
@@ -132,6 +139,11 @@ export class Config {
     this.agePoolIdleTimeoutMillis = env.AGE_POOL_IDLE_TIMEOUT_MS;
     this.agePoolMaxLifetimeSeconds = env.AGE_POOL_MAX_LIFETIME_SECONDS;
 
+    this.pgvectorUrl = env.PGVECTOR_URL;
+    this.pgvectorPoolMaxConnections = env.PGVECTOR_POOL_MAX_CONNECTIONS;
+    this.pgvectorPoolIdleTimeoutMillis = env.PGVECTOR_POOL_IDLE_TIMEOUT_MS;
+    this.pgvectorPoolMaxLifetimeSeconds = env.PGVECTOR_POOL_MAX_LIFETIME_SECONDS;
+
     this.redisUrl = env.REDIS_URL;
 
     this.objectStorageVendor = env.OBJECT_STORAGE_VENDOR;
@@ -145,7 +157,10 @@ export class Config {
   }
 
   static getInstance() {
-    return Config.instance ?? new Config();
+    if (isNil(Config.instance)) {
+      Config.instance = new Config();
+    }
+    return Config.instance;
   }
 }
 

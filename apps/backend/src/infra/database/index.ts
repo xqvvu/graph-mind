@@ -1,6 +1,6 @@
 export {
   configure,
-  type DB,
+  type Database as DB,
   destroyDb,
   getDb,
 } from "@/infra/database/client";

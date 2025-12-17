@@ -33,6 +33,16 @@ export const BasicConfigSchema = z.object({
   AGE_POOL_IDLE_TIMEOUT_MS: z.coerce.number<number>().int().positive().default(10000),
   AGE_POOL_MAX_LIFETIME_SECONDS: z.coerce.number<number>().int().positive().default(36000),
 
+  // PgVector
+  PGVECTOR_PORT: PortSchema.default(5487),
+  PGVECTOR_HOST: z.string().default("localhost"),
+  PGVECTOR_DB: z.string().default("vector"),
+  PGVECTOR_USER: z.string().default("postgres"),
+  PGVECTOR_PASSWORD: z.string().nonempty(),
+  PGVECTOR_POOL_MAX_CONNECTIONS: z.coerce.number<number>().int().positive().default(10),
+  PGVECTOR_POOL_IDLE_TIMEOUT_MS: z.coerce.number<number>().int().positive().default(10000),
+  PGVECTOR_POOL_MAX_LIFETIME_SECONDS: z.coerce.number<number>().int().positive().default(36000),
+
   // Redis
   REDIS_PORT: PortSchema.default(6379),
   REDIS_HOST: z.string().default("localhost"),
@@ -68,6 +78,9 @@ export const InterpolatedConfigSchema = z.object({
 
   // Apache AGE
   AGE_URL: z.string().regex(/^postgres(?:ql)?:\/\//),
+
+  // PgVector
+  PGVECTOR_URL: z.string().regex(/^postgres(?:ql)?:\/\//),
 
   // Redis
   REDIS_URL: z.string().regex(/^redis{1,2}?:\/\//),

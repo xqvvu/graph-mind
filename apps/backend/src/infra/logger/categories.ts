@@ -1,4 +1,4 @@
-export const root = ["graph-mind"] as const;
+export const root = ["app"] as const;
 
 export const http = {
   request: ["http", "req"],
@@ -21,6 +21,7 @@ export const infra = {
   redis: ["infra", "redis"],
   storage: ["infra", "storage"],
   age: ["infra", "age"],
+  pgvector: ["infra", "pgvector"],
 } as const;
 
 export const betterAuth = ["better-auth"] as const;

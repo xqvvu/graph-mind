@@ -5,9 +5,9 @@ import { SystemException } from "@/exceptions/system-exception";
 import { getRedisLogger } from "@/infra/redis/helpers";
 import { getConfig } from "@/lib/config";
 
-export type RDB = ReturnType<typeof createClient>;
+export type Redis = ReturnType<typeof createClient>;
 
-let redis: RDB | null = null;
+let redis: Redis | null = null;
 
 export async function configure() {
   if (isNil(redis)) {
@@ -18,10 +18,6 @@ export async function configure() {
       RESP: 3,
       url: config.redisUrl,
       maintNotifications: "disabled",
-    });
-
-    redis.on("connect", function redisConnectHandler() {
-      redisLogger.info("Connect to redis");
     });
 
     redis.on("ready", function redisConnectHandler() {
@@ -57,7 +53,7 @@ export function getRedis() {
   return redis;
 }
 
-export async function destroyRdb() {
+export async function destroyRedis() {
   if (isNotNil(redis)) {
     redis.destroy();
     redis = null;

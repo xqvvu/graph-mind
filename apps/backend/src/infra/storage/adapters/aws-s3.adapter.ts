@@ -1,7 +1,15 @@
 import type { S3Client } from "@aws-sdk/client-s3";
-import { BucketAlreadyExists, HeadBucketCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  BucketAlreadyExists,
+  BucketAlreadyOwnedByYou,
+  CreateBucketCommand,
+  HeadBucketCommand,
+  NotFound,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { isError } from "es-toolkit";
 import { getLogger, infra } from "@/infra/logger";
 import type { IObjectStorage } from "@/infra/storage/interface";
 import type {
@@ -27,23 +35,53 @@ export class AWSS3StorageAdapter implements IObjectStorage {
         }),
       );
 
+      logger.info(`Bucket ${this.bucket} already exists`);
+
       return {
         bucket: this.bucket,
         exists: true,
-        create: false,
+        created: false,
       };
     } catch (error) {
-      if (!(error instanceof BucketAlreadyExists)) {
+      if (error instanceof NotFound || (isError(error) && error.name === "NotFound")) {
+        logger.info(`Bucket ${this.bucket} does not exist`);
+      } else {
+        logger.error(`Error checking bucket ${this.bucket}`);
         throw error;
       }
+    }
 
-      logger.warn`Bucket ${this.bucket} already exists`;
+    try {
+      await this.client.send(
+        new CreateBucketCommand({
+          Bucket: this.bucket,
+        }),
+      );
 
+      logger.info(`Bucket ${this.bucket} created successfully`);
       return {
         bucket: this.bucket,
-        create: false,
         exists: true,
+        created: true,
       };
+    } catch (error) {
+      if (
+        error instanceof BucketAlreadyExists ||
+        error instanceof BucketAlreadyOwnedByYou ||
+        (isError(error) &&
+          (error.name === "BucketAlreadyExists" || error.name === "BucketAlreadyOwnedByYou"))
+      ) {
+        logger.warn(`Bucket ${this.bucket} was created by someone else during creation process`);
+
+        return {
+          bucket: this.bucket,
+          exists: true,
+          created: false,
+        };
+      }
+
+      logger.error(`Failed to create bucket ${this.bucket}`);
+      throw error;
     }
   }
 

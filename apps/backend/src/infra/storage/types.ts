@@ -7,7 +7,7 @@ export type CommonResult = {
 
 export type EnsureBucketResult = {
   exists: boolean;
-  create: boolean;
+  created: boolean;
   bucket: string;
 };
 

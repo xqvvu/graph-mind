@@ -1,8 +1,9 @@
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import { isNil, isNotNil, toMerged } from "es-toolkit";
-import type { PoolOptions } from "pg";
+import { isError, isNil, isNotNil, toMerged } from "es-toolkit";
+import type { PoolClient, PoolOptions } from "pg";
 import { Pool } from "pg";
 import { SystemException } from "@/exceptions/system-exception";
+import { getLogger, infra } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
 
 let pool: Pool | null = null;
@@ -26,6 +27,22 @@ SET search_path = ag_catalog, "$user", public;`;
 
     conn.query(sql);
   });
+
+  let clinet: PoolClient | null = null;
+  try {
+    clinet = await pool.connect();
+    await clinet.query("SELECT 1");
+    getLogger(infra.age).info("AGE is ready");
+  } catch (error) {
+    const message = isError(error) ? error.message : "Unknown error";
+    getLogger(infra.age).error(`Failed to connect to AGE: ${message}`);
+    throw new SystemException({
+      errcode: ErrorCode.INTERNAL_ERROR,
+      message: `Failed to connect to AGE: ${message}`,
+    });
+  } finally {
+    clinet?.release();
+  }
 }
 
 export function getAgePool() {
