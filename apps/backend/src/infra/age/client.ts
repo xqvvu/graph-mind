@@ -16,6 +16,8 @@ export async function configure() {
       max: age.poolMaxConnections,
       idleTimeoutMillis: age.poolIdleTimeoutMillis,
       maxLifetimeSeconds: age.poolMaxLifetimeSeconds,
+      keepAlive: true,
+      keepAliveInitialDelayMillis: 10_000,
     });
   }
 

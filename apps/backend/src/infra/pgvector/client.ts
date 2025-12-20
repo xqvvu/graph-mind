@@ -16,6 +16,8 @@ export async function configure() {
       max: pgvector.poolMaxConnections,
       idleTimeoutMillis: pgvector.poolIdleTimeoutMillis,
       maxLifetimeSeconds: pgvector.poolMaxLifetimeSeconds,
+      keepAlive: true,
+      keepAliveInitialDelayMillis: 10_000,
     });
 
     let client: PoolClient | null = null;

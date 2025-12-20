@@ -15,8 +15,15 @@ export async function configure() {
 
     db = drizzle({
       schema,
+      connection: {
+        connectionString: databse.url,
+        max: 10,
+        idleTimeoutMillis: 60_000,
+        maxLifetimeSeconds: 21600,
+        keepAlive: true,
+        keepAliveInitialDelayMillis: 10_000,
+      },
       casing: "snake_case",
-      connection: databse.url,
     });
 
     let client: PoolClient | null = null;
