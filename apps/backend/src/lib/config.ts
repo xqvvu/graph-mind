@@ -60,7 +60,7 @@ export class Config {
 
   readonly storage: Readonly<{
     vendor: ReturnType<typeof prepare>["STORAGE_VENDOR"];
-    acceeKeyId: string;
+    accessKeyId: string;
     secretAccessKey: string;
     region: string;
     forcePathStyle: boolean;
@@ -111,7 +111,7 @@ export class Config {
 
     this.storage = {
       vendor: env.STORAGE_VENDOR,
-      acceeKeyId: env.STORAGE_ACCESS_KEY,
+      accessKeyId: env.STORAGE_ACCESS_KEY,
       secretAccessKey: env.STORAGE_SECRET_KEY,
       region: env.STORAGE_REGION,
       forcePathStyle: env.STORAGE_FORCE_PATH_STYLE,

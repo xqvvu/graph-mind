@@ -30,7 +30,7 @@ export const ConfigInitSchema = z.object({
   AGE_USER: z.string().default("postgres"),
   AGE_PASSWORD: z.string().nonempty(),
   AGE_POOL_MAX_CONNECTIONS: z.coerce.number<number>().int().positive().default(10),
-  AGE_POOL_IDLE_TIMEOUT_MS: z.coerce.number<number>().int().positive().default(10000),
+  AGE_POOL_IDLE_TIMEOUT_MS: z.coerce.number<number>().int().positive().default(30000),
   AGE_POOL_MAX_LIFETIME_SECONDS: z.coerce.number<number>().int().positive().default(36000),
 
   // PgVector
@@ -40,7 +40,7 @@ export const ConfigInitSchema = z.object({
   PGVECTOR_USER: z.string().default("postgres"),
   PGVECTOR_PASSWORD: z.string().nonempty(),
   PGVECTOR_POOL_MAX_CONNECTIONS: z.coerce.number<number>().int().positive().default(10),
-  PGVECTOR_POOL_IDLE_TIMEOUT_MS: z.coerce.number<number>().int().positive().default(10000),
+  PGVECTOR_POOL_IDLE_TIMEOUT_MS: z.coerce.number<number>().int().positive().default(30000),
   PGVECTOR_POOL_MAX_LIFETIME_SECONDS: z.coerce.number<number>().int().positive().default(36000),
 
   // Redis

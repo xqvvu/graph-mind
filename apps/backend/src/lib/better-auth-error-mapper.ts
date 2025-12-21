@@ -4,10 +4,7 @@ import type { BASE_ERROR_CODES } from "better-auth";
 
 export type BetterAuthErrorCode = keyof typeof BASE_ERROR_CODES;
 
-const mapping: Record<
-  BetterAuthErrorCode | "MISSING_OR_NULL_ORIGIN",
-  ErrorCodeValue
-> = {
+const mapping: Record<BetterAuthErrorCode | "MISSING_OR_NULL_ORIGIN", ErrorCodeValue> = {
   MISSING_OR_NULL_ORIGIN: ErrorCode.INVALID_REQUEST,
 
   // Sign-in/Authentication errors
@@ -18,16 +15,14 @@ const mapping: Record<
 
   // Account/User management errors
   ACCOUNT_NOT_FOUND: ErrorCode.AUTH.ACCOUNT.ACCOUNT_NOT_FOUND,
-  CREDENTIAL_ACCOUNT_NOT_FOUND:
-    ErrorCode.AUTH.ACCOUNT.CREDENTIAL_ACCOUNT_NOT_FOUND,
+  CREDENTIAL_ACCOUNT_NOT_FOUND: ErrorCode.AUTH.ACCOUNT.CREDENTIAL_ACCOUNT_NOT_FOUND,
   USER_ALREADY_EXISTS: ErrorCode.AUTH.ACCOUNT.USER_ALREADY_EXISTS,
   USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL:
     ErrorCode.AUTH.ACCOUNT.USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL,
   USER_EMAIL_NOT_FOUND: ErrorCode.AUTH.ACCOUNT.USER_EMAIL_NOT_FOUND,
   FAILED_TO_CREATE_USER: ErrorCode.AUTH.ACCOUNT.FAILED_TO_CREATE_USER,
   FAILED_TO_UPDATE_USER: ErrorCode.AUTH.ACCOUNT.FAILED_TO_UPDATE_USER,
-  FAILED_TO_UNLINK_LAST_ACCOUNT:
-    ErrorCode.AUTH.ACCOUNT.FAILED_TO_UNLINK_LAST_ACCOUNT,
+  FAILED_TO_UNLINK_LAST_ACCOUNT: ErrorCode.AUTH.ACCOUNT.FAILED_TO_UNLINK_LAST_ACCOUNT,
 
   // Session management errors
   SESSION_EXPIRED: ErrorCode.AUTH.SESSION.SESSION_EXPIRED,
@@ -45,8 +40,7 @@ const mapping: Record<
 
   // OAuth/Social authentication errors
   PROVIDER_NOT_FOUND: ErrorCode.AUTH.OAUTH.PROVIDER_NOT_FOUND,
-  SOCIAL_ACCOUNT_ALREADY_LINKED:
-    ErrorCode.AUTH.OAUTH.SOCIAL_ACCOUNT_ALREADY_LINKED,
+  SOCIAL_ACCOUNT_ALREADY_LINKED: ErrorCode.AUTH.OAUTH.SOCIAL_ACCOUNT_ALREADY_LINKED,
   FAILED_TO_GET_USER_INFO: ErrorCode.AUTH.OAUTH.FAILED_TO_GET_USER_INFO,
   ID_TOKEN_NOT_SUPPORTED: ErrorCode.AUTH.OAUTH.ID_TOKEN_NOT_SUPPORTED,
 
@@ -54,8 +48,6 @@ const mapping: Record<
   INVALID_TOKEN: ErrorCode.AUTH.TOKEN.INVALID_TOKEN,
 };
 
-export function mapBetterAuthError(
-  betterAuthErrorCode: BetterAuthErrorCode,
-): ErrorCodeValue {
+export function mapBetterAuthError(betterAuthErrorCode: BetterAuthErrorCode): ErrorCodeValue {
   return mapping[betterAuthErrorCode] ?? null;
 }

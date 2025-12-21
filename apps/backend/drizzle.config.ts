@@ -1,10 +1,7 @@
 import path from "node:path";
 import { defineConfig } from "drizzle-kit";
 
-const schemaPath = path.resolve(
-  import.meta.dirname,
-  "../../packages/shared/src/schemas.ts",
-);
+const schemaPath = path.resolve(import.meta.dirname, "../../packages/shared/src/schemas.ts");
 
 const schemaOutputPath = path.join(import.meta.dirname, "drizzle");
 

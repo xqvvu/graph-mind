@@ -14,13 +14,9 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "es-toolkit": "^1.43.0",
-    "file-type": "^21.1.1",
-    "mime": "^4.1.0",
-    "neo4j-driver": "^6.0.1",
     "uuid": "^13.0.0",
     "vite-tsconfig-paths": "catalog:",
     "zod": "^4.2.1"
