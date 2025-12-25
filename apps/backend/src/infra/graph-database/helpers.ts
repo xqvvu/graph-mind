@@ -1,7 +1,7 @@
 import { isError } from "es-toolkit";
 import type { PoolClient } from "pg";
-import { getAgePool } from "@/infra/age/client";
 import { getLogger, infra } from "@/infra/logger";
+import { getAgePool } from "./client";
 
 export async function withTransaction<T>(
   handler: (conn: PoolClient) => Promise<T> | T,

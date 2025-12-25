@@ -3,10 +3,10 @@ import type { nil } from "@yokg/shared/types/utils";
 import type { IUser } from "@yokg/shared/validate/users";
 import { eq } from "drizzle-orm";
 import { isNil, isNotNil } from "es-toolkit";
-import { getDb, getDbLogger } from "@/infra/database";
-import { getRedis, getRedisLogger } from "@/infra/redis";
-import { RedisKeyFactory } from "@/infra/redis/keys";
-import { RedisTTLCalculator } from "@/infra/redis/ttl";
+import { getRedis, getRedisLogger } from "@/infra/cache";
+import { RedisKeyFactory } from "@/infra/cache/keys";
+import { RedisTTLCalculator } from "@/infra/cache/ttl";
+import { getDb, getDbLogger } from "@/infra/relational-database";
 import type { IUserRepository } from "./users.repository.interface";
 
 export class UserRepository implements IUserRepository {

@@ -1,12 +1,12 @@
 import { serve } from "@hono/node-server";
 import { createApp } from "@/app";
-import { configure as age, destroyAgePool } from "@/infra/age";
-import { configure as bullmq } from "@/infra/bullmq";
-import { configure as database, destroyDb } from "@/infra/database";
+import { destroyRedis, configure as redis } from "@/infra/cache";
+import { configure as age, destroyAgePool } from "@/infra/graph-database";
 import { destroyLogger, getLogger, configure as logger, root } from "@/infra/logger";
-import { destroyPgVectorPool, configure as pgvector } from "@/infra/pgvector";
-import { destroyRedis, configure as redis } from "@/infra/redis";
+import { configure as bullmq } from "@/infra/queue";
+import { configure as database, destroyDb } from "@/infra/relational-database";
 import { destroyStorage, configure as storage } from "@/infra/storage";
+import { destroyPgVectorPool, configure as pgvector } from "@/infra/vector-database";
 import { configure as betterAuth } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 

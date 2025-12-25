@@ -4,8 +4,8 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { isNil } from "es-toolkit";
 import { SystemError } from "@/errors/system-error";
-import { getDb } from "@/infra/database";
 import { betterAuth as betterAuthCategory, getLogger } from "@/infra/logger";
+import { getDb } from "@/infra/relational-database";
 import { getConfig } from "@/lib/config";
 
 let auth: ReturnType<typeof betterAuth> | null = null;
