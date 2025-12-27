@@ -1,4 +1,4 @@
-import type { IStorage } from "@/infra/storage/interface";
+import type { IStorage } from "../interface";
 
 export class MemoryAdapter implements IStorage {
   ensureBucket(): Promise<void> {

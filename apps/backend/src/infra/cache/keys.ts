@@ -1,4 +1,4 @@
-export class RedisKeyFactory {
+export class CacheKeyFactory {
   private readonly namespace = "business";
 
   users = {

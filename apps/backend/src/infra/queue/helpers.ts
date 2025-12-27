@@ -2,10 +2,10 @@ import type { ConnectionOptions } from "bullmq";
 import { getConfig } from "@/lib/config";
 
 export function createBullMqConnectionOptions(): ConnectionOptions {
-  const { redis } = getConfig();
+  const { queue } = getConfig();
 
   return {
-    url: redis.url,
+    url: queue.options.url,
     enableReadyCheck: false,
     maxRetriesPerRequest: null,
     retryStrategy: (times) => Math.min(times * 50, 2_000),

@@ -1,8 +1,5 @@
-# infra-organization Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change refactor-infra-to-capabilities. Update Purpose after archive.
-## Requirements
 ### Requirement: Capability-Based Infrastructure Directory Structure
 The infrastructure directory SHALL be organized by functional capabilities using short, stable names to improve maintainability and implementation flexibility.
 
@@ -70,6 +67,8 @@ The system SHALL maintain a clear mapping between infrastructure capabilities an
 - **THEN** documentation SHALL reference both capability names and their implementations
 - **AND** SHALL clarify that capability names are stable while implementations may change
 
+## ADDED Requirements
+
 ### Requirement: Capability API Naming
 Public exports in infrastructure modules SHALL use capability-based names and avoid technology identifiers.
 
@@ -91,4 +90,3 @@ Infrastructure capability configuration SHALL use a `{ vendor, options }` shape 
 - **WHEN** environment variables are loaded
 - **THEN** capability config SHALL be derived from vendor-specific env values
 - **AND** the public config shape SHALL remain stable across vendors
-

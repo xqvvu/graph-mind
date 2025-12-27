@@ -6,17 +6,17 @@ import { getErrorMessage } from "@/errors";
 import { getLogger, infra } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
 
-export type Database = ReturnType<typeof drizzle<typeof schema>>;
-let db: Database | null = null;
+export type RelDb = ReturnType<typeof drizzle<typeof schema>>;
+let db: RelDb | null = null;
 
-export async function configure() {
+export async function configureRelDb() {
   if (isNil(db)) {
-    const { databse } = getConfig();
+    const { relDb } = getConfig();
 
     db = drizzle({
       schema,
       connection: {
-        connectionString: databse.url,
+        connectionString: relDb.options.url,
         max: 10,
         idleTimeoutMillis: 60_000,
         maxLifetimeSeconds: 21600,
@@ -30,25 +30,25 @@ export async function configure() {
     try {
       client = await db.$client.connect();
       await client.query("SELECT 1");
-      getLogger(infra.database).info("Database is ready");
+      getLogger(infra.relDb).info("Relational DB is ready");
     } catch (error) {
       const message = getErrorMessage(error);
-      throw new Error(`Database is not ready: ${message}`);
+      throw new Error(`Relational DB is not ready: ${message}`);
     } finally {
       client?.release();
     }
   }
 }
 
-export function getDb() {
+export function getRelDb() {
   if (isNil(db)) {
-    throw new Error("Database is not ready");
+    throw new Error("Relational DB is not ready");
   }
 
   return db;
 }
 
-export async function destroyDb() {
+export async function destroyRelDb() {
   if (isNotNil(db)) {
     await db.$client.end();
     db = null;

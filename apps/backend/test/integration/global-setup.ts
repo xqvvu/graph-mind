@@ -1,12 +1,12 @@
 import path from "node:path";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { getDb } from "@/infra/relational-database";
+import { getRelDb } from "@/infra/rel-db";
 import { prepare } from "@/main";
 
 export default async function () {
   await prepare();
 
-  await migrate(getDb(), {
+  await migrate(getRelDb(), {
     migrationsFolder: path.join(import.meta.dirname, "../../drizzle"),
   });
 }

@@ -1,0 +1,11 @@
+## 1. Implementation
+- [x] 1.1 Confirm short capability names and mapping (cache, queue, rel-db, graph-db, vector-db, storage, logger)
+- [x] 1.2 Rename infra directories to short capability names and update barrel exports
+- [x] 1.3 Add adapter folders and minimal interfaces for graph-db and vector-db (CRUD/query)
+- [x] 1.4 Align storage adapters with capability naming and exports
+- [x] 1.5 Keep rel-db single-vendor with direct client (no adapters)
+- [x] 1.6 Update config schema to vendor/options per capability and map env variables
+- [x] 1.7 Rename infra logger categories and update helpers/usages
+- [x] 1.8 Update imports and references across backend/shared
+- [x] 1.9 Update documentation to reflect new naming/config
+- [ ] 1.10 Run `pnpm check` and targeted tests (blocked: Node ^24 required, current v25.2.1)

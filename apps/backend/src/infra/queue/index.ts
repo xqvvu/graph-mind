@@ -1,1 +1,1 @@
-export { configure } from "./client";
+export { configureQueue } from "./client";

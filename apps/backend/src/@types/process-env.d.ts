@@ -13,33 +13,45 @@ declare global {
       POSTGRES_DB?: string;
       POSTGRES_USER?: string;
       POSTGRES_PASSWORD?: string;
-      DATABASE_URL?: string;
+
+      // graph db (apache age)
+      GRAPH_DB_VENDOR?: string;
+      AGE_PORT?: string;
+      AGE_HOST?: string;
+      AGE_DB?: string;
+      AGE_USER?: string;
+      AGE_PASSWORD?: string;
+      AGE_POOL_MAX_CONNECTIONS?: string;
+      AGE_POOL_IDLE_TIMEOUT_MS?: string;
+      AGE_POOL_MAX_LIFETIME_SECONDS?: string;
+
+      // vector db (pgvector)
+      VECTOR_DB_VENDOR?: string;
+      PGVECTOR_PORT?: string;
+      PGVECTOR_HOST?: string;
+      PGVECTOR_DB?: string;
+      PGVECTOR_USER?: string;
+      PGVECTOR_PASSWORD?: string;
+      PGVECTOR_POOL_MAX_CONNECTIONS?: string;
+      PGVECTOR_POOL_IDLE_TIMEOUT_MS?: string;
+      PGVECTOR_POOL_MAX_LIFETIME_SECONDS?: string;
 
       // redis
       REDIS_PORT?: string;
       REDIS_HOST?: string;
       REDIS_DB?: string;
       REDIS_PASSWORD?: string;
-      REDIS_URL?: string;
 
-      // neo4j
-      NEO4J_HTTP_PORT?: string;
-      NEO4J_BOLT_PORT?: string;
-      NEO4J_HOST?: string;
-      NEO4J_USER?: string;
-      NEO4J_PASSWORD?: string;
-      NEO4J_DATABASE?: string;
-      NEO4J_MAX_CONNECTION_POOL_SIZE?: string;
-      NEO4J_CONNECTION_TIMEOUT?: string;
-      NEO4J_URI?: string;
-
-      // s3
-      S3_FORCE_PATH_STYLE?: string;
-      S3_API_PORT?: string;
-      S3_CONSOLE_PORT?: string;
-      S3_ACCESS_KEY?: string;
-      S3_SECRET_KEY?: string;
-      S3_REGION?: string;
+      // storage
+      STORAGE_VENDOR?: string;
+      STORAGE_ACCESS_KEY?: string;
+      STORAGE_SECRET_KEY?: string;
+      STORAGE_REGION?: string;
+      STORAGE_PUBLIC_BUCKET_NAME?: string;
+      STORAGE_PRIVATE_BUCKET_NAME?: string;
+      STORAGE_FORCE_PATH_STYLE?: string;
+      STORAGE_INTERNAL_ENDPOINT?: string;
+      STORAGE_EXTERNAL_ENDPOINT?: string;
 
       // better-auth
       BETTER_AUTH_SECRET?: string;

@@ -5,7 +5,7 @@ import { SystemError } from "@/errors/system-error";
 
 type Unit = "second" | "minute" | "hour" | "day" | "month" | "season" | "year";
 
-export class RedisTTLCalculator {
+export class CacheTTLCalculator {
   raw(params: { ttl: number; unit?: Unit }): number {
     const { ttl, unit = "second" } = params;
 
@@ -38,7 +38,7 @@ export class RedisTTLCalculator {
     if (result <= 0 || !isSafeInteger(result)) {
       throw new SystemError({
         errcode: ErrorCode.INTERNAL_ERROR,
-        message: "Redis ttl is invalid (too large or non-positive)",
+        message: "Cache ttl is invalid (too large or non-positive)",
       });
     }
 

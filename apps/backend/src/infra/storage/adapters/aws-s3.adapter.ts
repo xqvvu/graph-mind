@@ -3,7 +3,7 @@ import { HeadBucketCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { addSeconds } from "date-fns";
-import type { IStorage } from "@/infra/storage/interface";
+import type { IStorage } from "../interface";
 import type {
   CheckObjectIfExistsParams,
   CheckObjectIfExistsResult,
@@ -28,7 +28,7 @@ import type {
   ListObjectsResult,
   UploadObjectParams,
   UploadObjectResult,
-} from "@/infra/storage/types";
+} from "../types";
 
 export class AwsS3Adapter implements IStorage {
   constructor(

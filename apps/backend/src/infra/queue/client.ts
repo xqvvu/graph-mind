@@ -1,2 +1,2 @@
 // TODO: initialize Queues and Workers
-export async function configure() {}
+export async function configureQueue() {}

@@ -1,26 +1,34 @@
 import { serve } from "@hono/node-server";
 import { createApp } from "@/app";
-import { destroyRedis, configure as redis } from "@/infra/cache";
-import { configure as age, destroyAgePool } from "@/infra/graph-database";
+import { configureCache, destroyCache } from "@/infra/cache";
+import { configureGraphDb, destroyGraphDb } from "@/infra/graph-db";
 import { destroyLogger, getLogger, configure as logger, root } from "@/infra/logger";
-import { configure as bullmq } from "@/infra/queue";
-import { configure as database, destroyDb } from "@/infra/relational-database";
-import { destroyStorage, configure as storage } from "@/infra/storage";
-import { destroyPgVectorPool, configure as pgvector } from "@/infra/vector-database";
+import { configureQueue } from "@/infra/queue";
+import { configureRelDb, destroyRelDb } from "@/infra/rel-db";
+import { configureStorage, destroyStorage } from "@/infra/storage";
+import { configureVectorDb, destroyVectorDb } from "@/infra/vector-db";
 import { configure as betterAuth } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 
 export async function prepare() {
   await logger();
-  await Promise.all([database(), age(), pgvector(), redis(), storage(), betterAuth(), bullmq()]);
+  await Promise.all([
+    configureRelDb(),
+    configureGraphDb(),
+    configureVectorDb(),
+    configureCache(),
+    configureStorage(),
+    configureQueue(),
+    betterAuth(),
+  ]);
 }
 
 export async function destroy() {
   await Promise.all([
-    destroyDb(),
-    destroyAgePool(),
-    destroyPgVectorPool(),
-    destroyRedis(),
+    destroyRelDb(),
+    destroyGraphDb(),
+    destroyVectorDb(),
+    destroyCache(),
     destroyStorage(),
   ]);
   await destroyLogger();

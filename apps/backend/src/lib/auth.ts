@@ -5,14 +5,14 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { isNil } from "es-toolkit";
 import { SystemError } from "@/errors/system-error";
 import { betterAuth as betterAuthCategory, getLogger } from "@/infra/logger";
-import { getDb } from "@/infra/relational-database";
+import { getRelDb } from "@/infra/rel-db";
 import { getConfig } from "@/lib/config";
 
 let auth: ReturnType<typeof betterAuth> | null = null;
 
 export async function configure() {
   if (isNil(auth)) {
-    const db = getDb();
+    const db = getRelDb();
     const { server, isDevelopmentNodeEnv } = getConfig();
     const logger = getLogger(betterAuthCategory);
 

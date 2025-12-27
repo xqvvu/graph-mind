@@ -1,3 +1,4 @@
+import type { getConfig } from "@/lib/config";
 import type {
   CheckObjectIfExistsParams,
   CheckObjectIfExistsResult,
@@ -22,8 +23,7 @@ import type {
   ListObjectsResult,
   UploadObjectParams,
   UploadObjectResult,
-} from "@/infra/storage/types";
-import type { getConfig } from "@/lib/config";
+} from "./types";
 
 /**
  * 对象存储接口

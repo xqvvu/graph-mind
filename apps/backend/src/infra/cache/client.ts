@@ -4,18 +4,18 @@ import { getErrorMessage } from "@/errors";
 import { getLogger, infra } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
 
-export type Redis = ReturnType<typeof createClient>;
-let redis: Redis | null = null;
+export type CacheClient = ReturnType<typeof createClient>;
+let client: CacheClient | null = null;
 
-export async function configure() {
-  if (isNotNil(redis)) return;
+export async function configureCache() {
+  if (isNotNil(client)) return;
 
   const config = getConfig();
-  const logger = getLogger(infra.redis);
+  const logger = getLogger(infra.cache);
 
-  redis = createClient({
+  client = createClient({
     RESP: 3,
-    url: config.redis.url,
+    url: config.cache.options.url,
     maintNotifications: "disabled",
     socket: {
       keepAlive: true,
@@ -27,23 +27,23 @@ export async function configure() {
     },
   });
 
-  redis.on("ready", () => void logger.info("Redis is ready"));
-  redis.on("error", (err) => void logger.error(getErrorMessage(err)));
+  client.on("ready", () => void logger.info("Cache is ready"));
+  client.on("error", (err) => void logger.error(getErrorMessage(err)));
 
-  await redis.connect();
+  await client.connect();
 }
 
-export function getRedis() {
-  if (isNil(redis)) {
-    throw new Error("Redis is not ready");
+export function getCache() {
+  if (isNil(client)) {
+    throw new Error("Cache is not ready");
   }
 
-  return redis;
+  return client;
 }
 
-export async function destroyRedis() {
-  if (isNotNil(redis)) {
-    await redis.quit();
-    redis = null;
+export async function destroyCache() {
+  if (isNotNil(client)) {
+    await client.quit();
+    client = null;
   }
 }

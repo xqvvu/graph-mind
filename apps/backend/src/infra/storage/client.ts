@@ -1,10 +1,10 @@
 import { isNil, isNotNil } from "es-toolkit";
-import { AwsS3Adapter } from "@/infra/storage/adapters/aws-s3.adapter";
-import { MemoryAdapter } from "@/infra/storage/adapters/memory.adapter";
-import { MinioAdapter } from "@/infra/storage/adapters/minio.adapter";
-import { RustFsAdapter } from "@/infra/storage/adapters/rustfs.adapter";
-import type { IStorage, IStorageOptions } from "@/infra/storage/interface";
 import { getConfig } from "@/lib/config";
+import { AwsS3Adapter } from "./adapters/aws-s3.adapter";
+import { MemoryAdapter } from "./adapters/memory.adapter";
+import { MinioAdapter } from "./adapters/minio.adapter";
+import { RustFsAdapter } from "./adapters/rustfs.adapter";
+import type { IStorage, IStorageOptions } from "./interface";
 
 let storageClient: IStorage | null = null;
 
@@ -50,18 +50,18 @@ function createStorageAdapter(options: IStorageOptions): IStorage {
 /**
  * 配置存储实例，使用 internalEndpoint 创建主实例
  */
-export async function configure() {
+export async function configureStorage() {
   if (isNil(storageClient)) {
     const { storage } = getConfig();
 
     // 使用 internal endpoint 创建主实例（用于服务端操作）
     const options: IStorageOptions = {
       vendor: storage.vendor,
-      endpoint: storage.internalEndpoint,
-      region: storage.region,
-      forcePathStyle: storage.forcePathStyle,
-      accessKeyId: storage.accessKeyId,
-      secretAccessKey: storage.secretAccessKey,
+      endpoint: storage.options.internalEndpoint,
+      region: storage.options.region,
+      forcePathStyle: storage.options.forcePathStyle,
+      accessKeyId: storage.options.accessKeyId,
+      secretAccessKey: storage.options.secretAccessKey,
     };
 
     storageClient = createStorageAdapter(options);
@@ -84,8 +84,8 @@ export function getStorage() {
 export function getBucketNames() {
   const { storage } = getConfig();
   return {
-    publicBucket: storage.publicBucketName,
-    privateBucket: storage.privateBucketName,
+    publicBucket: storage.options.publicBucketName,
+    privateBucket: storage.options.privateBucketName,
   };
 }
 
@@ -95,8 +95,8 @@ export function getBucketNames() {
 export function getEndpoints() {
   const { storage } = getConfig();
   return {
-    internalEndpoint: storage.internalEndpoint,
-    externalEndpoint: storage.externalEndpoint,
+    internalEndpoint: storage.options.internalEndpoint,
+    externalEndpoint: storage.options.externalEndpoint,
   };
 }
 

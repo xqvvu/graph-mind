@@ -2,6 +2,8 @@ import { createEnv } from "@t3-oss/env-core";
 import type { Method } from "@yokg/shared/types/http";
 import { ConfigInitSchema } from "@yokg/shared/validate/config";
 import { isNil } from "es-toolkit";
+import type { GraphDbConfig } from "@/infra/graph-db";
+import type { VectorDbConfig } from "@/infra/vector-db";
 
 function prepare() {
   return createEnv({
@@ -36,38 +38,43 @@ export class Config {
     betterAuthUrl: string;
   }>;
 
-  readonly databse: Readonly<{
-    url: string;
+  readonly relDb: Readonly<{
+    vendor: "postgres";
+    options: {
+      url: string;
+    };
   }>;
 
-  readonly age: Readonly<{
-    url: string;
-    poolMaxConnections: number;
-    poolIdleTimeoutMillis: number;
-    poolMaxLifetimeSeconds: number;
+  readonly graphDb: Readonly<GraphDbConfig>;
+
+  readonly vectorDb: Readonly<VectorDbConfig>;
+
+  readonly cache: Readonly<{
+    vendor: "redis";
+    options: {
+      url: string;
+    };
   }>;
 
-  readonly pgvector: Readonly<{
-    url: string;
-    poolMaxConnections: number;
-    poolIdleTimeoutMillis: number;
-    poolMaxLifetimeSeconds: number;
-  }>;
-
-  readonly redis: Readonly<{
-    url: string;
+  readonly queue: Readonly<{
+    vendor: "bullmq";
+    options: {
+      url: string;
+    };
   }>;
 
   readonly storage: Readonly<{
     vendor: ReturnType<typeof prepare>["STORAGE_VENDOR"];
-    accessKeyId: string;
-    secretAccessKey: string;
-    region: string;
-    forcePathStyle: boolean;
-    publicBucketName: string;
-    privateBucketName: string;
-    internalEndpoint: string;
-    externalEndpoint: string;
+    options: {
+      accessKeyId: string;
+      secretAccessKey: string;
+      region: string;
+      forcePathStyle: boolean;
+      publicBucketName: string;
+      privateBucketName: string;
+      internalEndpoint: string;
+      externalEndpoint: string;
+    };
   }>;
 
   private constructor() {
@@ -87,38 +94,59 @@ export class Config {
       betterAuthUrl: env.BETTER_AUTH_URL,
     };
 
-    this.databse = {
-      url: `postgres://${env.POSTGRES_USER}:${env.POSTGRES_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`,
+    this.relDb = {
+      vendor: "postgres",
+      options: {
+        url: `postgres://${env.POSTGRES_USER}:${env.POSTGRES_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`,
+      },
     };
 
-    this.age = {
-      url: `postgres://${env.AGE_USER}:${env.AGE_PASSWORD}@${env.AGE_HOST}:${env.AGE_PORT}/${env.AGE_DB}`,
-      poolIdleTimeoutMillis: env.AGE_POOL_IDLE_TIMEOUT_MS,
-      poolMaxConnections: env.AGE_POOL_MAX_CONNECTIONS,
-      poolMaxLifetimeSeconds: env.AGE_POOL_MAX_LIFETIME_SECONDS,
+    this.graphDb = {
+      vendor: env.GRAPH_DB_VENDOR,
+      options: {
+        url: `postgres://${env.AGE_USER}:${env.AGE_PASSWORD}@${env.AGE_HOST}:${env.AGE_PORT}/${env.AGE_DB}`,
+        poolIdleTimeoutMillis: env.AGE_POOL_IDLE_TIMEOUT_MS,
+        poolMaxConnections: env.AGE_POOL_MAX_CONNECTIONS,
+        poolMaxLifetimeSeconds: env.AGE_POOL_MAX_LIFETIME_SECONDS,
+      },
     };
 
-    this.pgvector = {
-      url: `postgres://${env.PGVECTOR_USER}:${env.PGVECTOR_PASSWORD}@${env.PGVECTOR_HOST}:${env.PGVECTOR_PORT}/${env.PGVECTOR_DB}`,
-      poolIdleTimeoutMillis: env.PGVECTOR_POOL_IDLE_TIMEOUT_MS,
-      poolMaxConnections: env.PGVECTOR_POOL_MAX_CONNECTIONS,
-      poolMaxLifetimeSeconds: env.PGVECTOR_POOL_MAX_LIFETIME_SECONDS,
+    this.vectorDb = {
+      vendor: env.VECTOR_DB_VENDOR,
+      options: {
+        url: `postgres://${env.PGVECTOR_USER}:${env.PGVECTOR_PASSWORD}@${env.PGVECTOR_HOST}:${env.PGVECTOR_PORT}/${env.PGVECTOR_DB}`,
+        poolIdleTimeoutMillis: env.PGVECTOR_POOL_IDLE_TIMEOUT_MS,
+        poolMaxConnections: env.PGVECTOR_POOL_MAX_CONNECTIONS,
+        poolMaxLifetimeSeconds: env.PGVECTOR_POOL_MAX_LIFETIME_SECONDS,
+      },
     };
 
-    this.redis = {
-      url: `redis://default:${env.REDIS_PASSWORD}@${env.REDIS_HOST}:${env.REDIS_PORT}/${env.REDIS_DB}`,
+    this.cache = {
+      vendor: "redis",
+      options: {
+        url: `redis://default:${env.REDIS_PASSWORD}@${env.REDIS_HOST}:${env.REDIS_PORT}/${env.REDIS_DB}`,
+      },
+    };
+
+    this.queue = {
+      vendor: "bullmq",
+      options: {
+        url: `redis://default:${env.REDIS_PASSWORD}@${env.REDIS_HOST}:${env.REDIS_PORT}/${env.REDIS_DB}`,
+      },
     };
 
     this.storage = {
       vendor: env.STORAGE_VENDOR,
-      accessKeyId: env.STORAGE_ACCESS_KEY,
-      secretAccessKey: env.STORAGE_SECRET_KEY,
-      region: env.STORAGE_REGION,
-      forcePathStyle: env.STORAGE_FORCE_PATH_STYLE,
-      publicBucketName: env.STORAGE_PUBLIC_BUCKET_NAME,
-      privateBucketName: env.STORAGE_PRIVATE_BUCKET_NAME,
-      internalEndpoint: env.STORAGE_INTERNAL_ENDPOINT,
-      externalEndpoint: env.STORAGE_EXTERNAL_ENDPOINT,
+      options: {
+        accessKeyId: env.STORAGE_ACCESS_KEY,
+        secretAccessKey: env.STORAGE_SECRET_KEY,
+        region: env.STORAGE_REGION,
+        forcePathStyle: env.STORAGE_FORCE_PATH_STYLE,
+        publicBucketName: env.STORAGE_PUBLIC_BUCKET_NAME,
+        privateBucketName: env.STORAGE_PRIVATE_BUCKET_NAME,
+        internalEndpoint: env.STORAGE_INTERNAL_ENDPOINT,
+        externalEndpoint: env.STORAGE_EXTERNAL_ENDPOINT,
+      },
     };
   }
 

@@ -11,52 +11,63 @@ A RAG (Retrieval-Augmented Generation) enhanced Knowledge Graph system that comb
 ## Tech Stack
 
 ### Core
-- **Language:** TypeScript (strict mode)
+- **Languages:** TypeScript (strict mode) for apps; Python planned for compute
 - **Runtime:** Node.js ^24
-- **Package Manager:** pnpm ^10.24
+- **Package Manager:** pnpm ^10.26
 - **Monorepo Management:** pnpm workspaces + Turborepo
+- **Tooling:** Biome, Vitest, Lefthook, Just/Make
 
 ### Backend (`apps/backend`)
 - **Framework:** Hono (Node.js adapter)
+- **Build:** tsdown
 - **Database (Relational):** PostgreSQL + Drizzle ORM
-- **Database (Graph):** Neo4j (for knowledge graph storage)
-- **Database (Vector):** Milvus (for RAG embeddings and similarity search)
-- **Database (Cache/KV):** Redis (with RedisJSON)
-- **AI/RAG:** Vercel AI SDK v5 (`ai`, `@ai-sdk/*`)
+- **Database (Graph):** Apache AGE (Postgres extension)
+- **Database (Vector):** pgvector (separate Postgres instance)
+- **Database (Cache/KV):** Redis
+- **Queue:** BullMQ (Redis)
+- **Object Storage:** S3-compatible (RustFS/MinIO/AWS S3 adapters)
+- **AI/RAG:** Vercel AI SDK (`ai`, `@ai-sdk/*`)
 - **Auth:** Better Auth
 - **Validation:** Zod + drizzle-zod
 - **Logging:** Logtape
-- **Testing:** Vitest
+- **Testing:** Vitest (unit + integration)
+- **Rate Limiting:** hono-rate-limiter
 
 ### Frontend (`apps/web`)
-- **Framework:** React 19
-- **Build Tool:** Vite 7
+- **Framework:** TanStack Start (React 19)
+- **Build Tool:** Vite 7 (Nitro SSR adapter)
 - **Routing:** TanStack Router (file-based)
 - **Data Fetching:** TanStack Query
-- **Forms:** TanStack Form
-- **UI Components:** shadcn/ui + Radix UI primitives
-- **Styling:** Tailwind CSS v4 + class-variance-authority (cva)
-- **Icons:** Iconify (via `@iconify/tailwind4`)
+- **Forms:** React Hook Form + @hookform/resolvers
+- **UI Components:** Base UI primitives + custom shadcn-style components
+- **Styling:** Tailwind CSS v4 + class-variance-authority (cva) + tailwind-merge
+- **Icons:** Phosphor Icons
+- **Theming:** next-themes
 - **Graph Visualization:** D3.js (d3-force for force-directed layouts)
 - **Testing:** Vitest, React Testing Library
 
+### Compute (`apps/compute`, planned)
+- **Framework:** Litestar (Python)
+- **RAG/Chunking:** LightRAG, Chonkie, RAG-Anything
+
 ### Shared Packages (`packages/`)
 - `@yokg/shared`: Zod schemas, Drizzle tables, types, utilities
-- `@yokg/ky`: HTTP client factory (Ky wrappers for web/server)
-- `@yokg/ai-providers`: Custom AI provider implementations
 
 ## Project Conventions
 
 ### Code Style
 - **Linter/Formatter:** Biome (`biome.json`). All code must pass `pnpm check`.
+- **Formatting Defaults:** Double quotes, semicolons, 100-char line width.
+- **Pre-commit:** Lefthook runs Biome on staged files.
 - **Type Safety:** Strict TypeScript configuration. No `any` unless absolutely necessary.
+- **Path Aliases:** `@/` for `src/` (apps), `@yokg/shared/*` and `#test/*` in backend.
 - **Naming Conventions:**
-  - **Files:** `kebab-case.ts` (e.g., `users.service.ts`, `llm.route.ts`)
+  - **Files:** `kebab-case` with role suffixes (e.g., `users.service.ts`, `auth.route.ts`)
   - **Classes:** `PascalCase` (e.g., `UserService`, `UserRepository`)
   - **Variables/Functions:** `camelCase`
   - **Constants:** `UPPER_SNAKE_CASE`
-  - **Zod Schemas:** `PascalCase` + `Schema` suffix (e.g., `SelectUserSchema`, `LLMChatCompletionsSchema`)
-  - **Types from Zod:** `PascalCase` with `I` prefix for interfaces (e.g., `IUser`) or descriptive suffix (e.g., `LLMChatCompletionsParams`)
+  - **Zod Schemas:** `PascalCase` + `Schema` suffix (e.g., `SelectUserSchema`, `ConfigInitSchema`)
+  - **Types from Zod:** `PascalCase` with `I` prefix for interfaces (e.g., `IUser`) or descriptive suffix (e.g., `ConfigInit`)
   - **Repository Interfaces:** `I` + `EntityName` + `Repository` (e.g., `IUserRepository`)
   - **Route Handlers:** Named function with `Handler` suffix (e.g., `selectAllUsersHandler`)
 
@@ -66,11 +77,13 @@ A RAG (Retrieval-Augmented Generation) enhanced Knowledge Graph system that comb
 ```
 apps/backend/src/
 ├── @types/           # Type declarations (hono.d.ts, process-env.d.ts)
-├── exceptions/       # Custom exception classes
-├── infra/            # Infrastructure (database, redis, logger)
+├── app.ts            # Hono app wiring
+├── main.ts           # Entrypoint
+├── errors/           # Error types and helpers
+├── infra/            # Infrastructure (rel-db, graph-db, vector-db, cache, storage, queue, logger)
 ├── lib/              # Utilities and helpers
 ├── middlewares/      # Hono middlewares
-├── modules/          # Domain modules (auth/, users/, llm/)
+├── modules/          # Domain modules (auth/, users/)
 │   └── [module]/
 │       ├── [module].route.ts    # Route definitions
 │       └── [module].service.ts  # Business logic
@@ -82,6 +95,11 @@ apps/backend/src/
 - Routes handle HTTP concerns, validation, response formatting
 - Services contain business logic, orchestration
 - Repositories handle data access (DB + Cache)
+
+#### Infra Configuration
+- Capability names are short and stable (`rel-db`, `graph-db`, `vector-db`, `cache`, `queue`, `storage`)
+- Adapter-based capabilities use `{ vendor, options }` configuration (graph-db, vector-db, storage)
+- Single-vendor capabilities stay direct (rel-db, cache, queue)
 
 #### Dependency Management (Singleton Pattern)
 ```typescript
@@ -118,6 +136,7 @@ R.fail(c, { errcode, errmsg })  // Error response
 #### Format: 5-digit `[Module 2-digit][Category 3-digit]`
 - Module 10: AUTH (101xx-107xx)
 - Module 20: USER (201xx)
+- Module 30: GRAPH (301xx-303xx)
 - Reserved: 0 (success), -1 to -4 (generic errors)
 
 #### Usage
@@ -135,19 +154,23 @@ throw new BusinessException(404, {
 #### Directory Structure
 ```
 apps/web/src/
+├── __devtools/       # Dev-only tooling
 ├── components/
-│   ├── ui/           # shadcn/ui components (auto-generated)
+│   ├── ui/           # Base UI + cva components
 │   └── [feature]/    # Feature-specific components
-├── integrations/     # Third-party integrations (tanstack-query, etc.)
+├── providers/        # App-wide providers (theme, query, etc.)
 ├── lib/              # Utilities
-└── routes/           # TanStack Router file-based routes
+└── routes/           # TanStack Start file-based routes
+    ├── -components/  # Route-scoped UI
+    ├── -layouts/     # Shared layouts
+    └── _layout/      # Route layout segments
 ```
 
-#### UI Components (shadcn/ui)
+#### UI Components
 - Components use `cva` for variant definitions
 - Export both component and variants (e.g., `Button`, `buttonVariants`)
 - Use `data-slot` attribute for styling hooks
-- Prefer Radix UI primitives for accessibility
+- Prefer Base UI primitives for accessibility
 
 ### Shared Package Conventions
 
@@ -158,8 +181,8 @@ export const SelectUserSchema = createSelectSchema(users);
 export type IUser = z.infer<typeof SelectUserSchema>;
 
 // Manual definition
-export const LLMChatCompletionsSchema = z.object({ ... });
-export type LLMChatCompletionsParams = z.input<typeof LLMChatCompletionsSchema>;
+export const ConfigInitSchema = z.object({ ... });
+export type ConfigInit = z.output<typeof ConfigInitSchema>;
 ```
 
 ### Testing Strategy
@@ -178,6 +201,7 @@ export type LLMChatCompletionsParams = z.input<typeof LLMChatCompletionsSchema>;
 - **Nodes:** Entities representing real-world objects (Person, Concept, Document, Topic, etc.)
 - **Edges:** Typed relationships between entities (AUTHOR_OF, RELATED_TO, BELONGS_TO, REFERENCES, etc.)
 - **Properties:** Metadata on both nodes and edges (timestamps, weights, attributes)
+- **Storage:** Apache AGE graph in Postgres (Cypher)
 
 ### RAG (Retrieval-Augmented Generation)
 - **Hybrid Search:** Combine vector similarity (semantic) with graph traversal (structural)
@@ -185,19 +209,17 @@ export type LLMChatCompletionsParams = z.input<typeof LLMChatCompletionsSchema>;
 - **Context Assembly:** Aggregate relevant context from multiple sources for LLM prompts
 - **Chunking Strategy:** Split documents for optimal retrieval granularity
 
-### Vector Search with Milvus
-- **Collections:** Organized by document type or knowledge domain
-- **Index Types:** HNSW for low-latency queries, IVF_FLAT for accuracy
+### Vector Search with pgvector
+- **Tables:** Store embeddings alongside metadata in Postgres
+- **Index Types:** HNSW for low-latency queries, IVFFlat for recall/accuracy trade-offs
 - **Hybrid Query:** Combine vector similarity with scalar filters (e.g., by user, timestamp)
 - **Integration Pattern:**
   ```typescript
-  // Milvus client integration in infra/milvus/
-  const results = await milvus.search({
-    collection: "document_chunks",
-    vector: embedding,
-    topK: 10,
-    filter: "user_id == 'xxx'",
-  });
+  // pgvector query via pg Pool in infra/vector-db/
+  const { rows } = await pool.query(
+    "SELECT id, content FROM document_chunks WHERE user_id = $1 ORDER BY embedding <-> $2 LIMIT 10",
+    [userId, embedding],
+  );
   ```
 
 ### Graph Visualization with D3.js
@@ -206,7 +228,7 @@ export type LLMChatCompletionsParams = z.input<typeof LLMChatCompletionsSchema>;
 - **Performance:** Canvas rendering for large graphs (1000+ nodes), SVG for smaller
 - **Data Flow:**
   ```
-  Neo4j → Backend API → Frontend → D3.js Renderer
+  Apache AGE → Backend API → Frontend → D3.js Renderer
   ```
 - **Component Design:**
   ```typescript
@@ -219,7 +241,7 @@ export type LLMChatCompletionsParams = z.input<typeof LLMChatCompletionsSchema>;
       └── use-force-simulation.ts  // D3 force simulation hook
   ```
 
-### AI SDK Integration (Vercel AI SDK v5)
+### AI SDK Integration (Vercel AI SDK)
 ```typescript
 import { generateText, streamText, embed } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
@@ -238,9 +260,10 @@ const { embedding } = await embed({ model, value });
 ## Important Constraints
 
 ### Architecture Constraints
-- **Neo4j Integration:** Integrate into `infra/` structure alongside Postgres
+- **Apache AGE Integration:** Keep AGE connections in `infra/graph-db` and load AGE on connect
+- **pgvector Integration:** Keep pgvector connections in `infra/vector-db` with dedicated pool
 - **Cache Strategy:** Use Redis for expensive graph query results
-- **Data Consistency:** Maintain sync between Postgres (relational) and Neo4j (graph) when applicable
+- **Data Consistency:** Maintain sync between relational Postgres and AGE/pgvector stores when applicable
 
 ### Performance Considerations
 - Graph traversals can be expensive—use caching and query optimization
@@ -255,13 +278,14 @@ const { embedding } = await embed({ model, value });
 
 ### Infrastructure
 - **PostgreSQL:** Primary relational data store (users, sessions, metadata)
-- **Neo4j:** Knowledge graph storage (AuraDB or self-hosted)
-- **Milvus:** Vector database for embeddings (standalone or cluster mode)
-- **Redis:** Caching (with RedisJSON module) and session management
+- **Apache AGE:** Knowledge graph storage (Postgres extension)
+- **pgvector:** Vector similarity search (Postgres extension)
+- **Redis:** Caching and session management
+- **RustFS / S3:** S3-compatible object storage for uploads/assets
 
 ### AI/LLM Providers
 - **Vercel AI SDK:** Unified interface for multiple providers
-- **Supported Providers:** OpenAI, Anthropic, custom providers via `@yokg/ai-providers`
+- **Supported Providers:** OpenAI, Anthropic (via `@ai-sdk/*`)
 
 ## Future Modules (Planned)
 

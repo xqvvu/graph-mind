@@ -1,12 +1,12 @@
 import { isError } from "es-toolkit";
 import type { PoolClient } from "pg";
 import { getLogger, infra } from "@/infra/logger";
-import { getPgVectorPool } from "./client";
+import { getVectorDbPool } from "./client";
 
 export async function withTransaction<T>(
   handler: (conn: PoolClient) => Promise<T> | T,
 ): Promise<T> {
-  const pool = getPgVectorPool();
+  const pool = getVectorDbPool();
   const client = await pool.connect();
 
   try {
@@ -17,7 +17,7 @@ export async function withTransaction<T>(
     return result;
   } catch (error) {
     const message = isError(error) ? error.message : "Unknown error";
-    getLogger(infra.age).error(`Transaction failed and rollback: ${message}`);
+    getLogger(infra.vectorDb).error(`Transaction failed and rollback: ${message}`);
 
     await client.query("ROLLBACK");
 
@@ -27,6 +27,6 @@ export async function withTransaction<T>(
   }
 }
 
-export function getPgVectorLogger() {
-  return getLogger(infra.age);
+export function getVectorDbLogger() {
+  return getLogger(infra.vectorDb);
 }

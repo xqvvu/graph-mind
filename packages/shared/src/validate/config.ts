@@ -24,6 +24,7 @@ export const ConfigInitSchema = z.object({
   POSTGRES_PASSWORD: z.string().nonempty(),
 
   // Apache AGE
+  GRAPH_DB_VENDOR: z.enum(["age"]).default("age"),
   AGE_PORT: PortSchema.default(5455),
   AGE_HOST: z.string().default("localhost"),
   AGE_DB: z.string().default("graph"),
@@ -34,6 +35,7 @@ export const ConfigInitSchema = z.object({
   AGE_POOL_MAX_LIFETIME_SECONDS: z.coerce.number<number>().int().positive().default(36000),
 
   // PgVector
+  VECTOR_DB_VENDOR: z.enum(["pgvector"]).default("pgvector"),
   PGVECTOR_PORT: PortSchema.default(5487),
   PGVECTOR_HOST: z.string().default("localhost"),
   PGVECTOR_DB: z.string().default("vector"),

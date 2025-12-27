@@ -16,11 +16,12 @@ export const mod = {
 } as const;
 
 export const infra = {
-  database: ["infra", "database"],
-  redis: ["infra", "redis"],
+  relDb: ["infra", "rel-db"],
+  cache: ["infra", "cache"],
   storage: ["infra", "storage"],
-  age: ["infra", "age"],
-  pgvector: ["infra", "pgvector"],
+  graphDb: ["infra", "graph-db"],
+  vectorDb: ["infra", "vector-db"],
+  queue: ["infra", "queue"],
 } as const;
 
 export const betterAuth = ["better-auth"] as const;

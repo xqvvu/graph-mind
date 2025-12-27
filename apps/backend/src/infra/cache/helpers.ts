@@ -1,5 +1,5 @@
 import { getLogger, infra } from "@/infra/logger";
 
-export function getRedisLogger() {
-  return getLogger(infra.redis);
+export function getCacheLogger() {
+  return getLogger(infra.cache);
 }

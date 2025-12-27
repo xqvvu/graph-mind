@@ -1,9 +1,9 @@
 export {
-  configure,
-  destroyRedis,
-  getRedis,
-  type Redis as RDB,
+  type CacheClient,
+  configureCache,
+  destroyCache,
+  getCache,
 } from "./client";
-export { getRedisLogger } from "./helpers";
-export { RedisKeyFactory } from "./keys";
-export { RedisTTLCalculator } from "./ttl";
+export { getCacheLogger } from "./helpers";
+export { CacheKeyFactory } from "./keys";
+export { CacheTTLCalculator } from "./ttl";
