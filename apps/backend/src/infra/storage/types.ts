@@ -3,7 +3,7 @@ import type { Readable } from "node:stream";
 /**
  * 对象数据类型，支持流式读取和缓冲区
  */
-export type Body = Readable | Buffer | string;
+export type Body = Readable | Buffer | string | Uint8Array | ReadableStream;
 
 /**
  * 对象元数据信息
@@ -247,15 +247,24 @@ export interface DeleteObjectByPrefixResult {
   prefix: string;
   /** 删除的对象数量 */
   deletedCount: number;
+  /** 成功删除的对象键列表 */
+  deletedKeys: string[];
+  /** 删除失败的对象列表 */
+  failed: Array<{
+    /** 对象键 */
+    key: string;
+    /** 错误信息 */
+    error: string;
+  }>;
 }
 
-// === listObjects ===
+// === listAllObjectKeys ===
 
 /**
- * listObjects 方法参数
- * 列出 bucket 中的对象
+ * listAllObjectKeys 方法参数
+ * 列出 bucket 中的所有对象键（不分页）
  */
-export interface ListObjectsParams {
+export interface ListAllObjectKeysParams {
   /** 对象键前缀过滤 */
   prefix?: string;
   /** 分隔符，用于分组 */
@@ -263,9 +272,9 @@ export interface ListObjectsParams {
 }
 
 /**
- * listObjects 方法返回值
+ * listAllObjectKeys 方法返回值
  */
-export interface ListObjectsResult {
+export interface ListAllObjectKeysResult {
   /** bucket 名字 */
   bucket: string;
   /** 对象键列表 */
@@ -314,6 +323,8 @@ export interface CheckObjectIfExistsParams {
 export interface CheckObjectIfExistsResult {
   /** bucket 名字 */
   bucket: string;
-  /** 对象是否存在 */
-  exists: boolean;
+  /** 存在的对象键列表 */
+  existsKeys: string[];
+  /** 不存在的对象键列表 */
+  missingKeys: string[];
 }

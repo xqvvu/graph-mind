@@ -80,14 +80,14 @@ services:
       retries: 5
 
   rustfs:
-    image: rustfs/rustfs:1.0.0-alpha.76
+    image: rustfs/rustfs:1.0.0-alpha.77
     ports:
-      - ${OBJECT_STORAGE_SELF_HOSTED_VENDOR_API_PORT-:9000}:9000
-      - ${OBJECT_STORAGE_SELF_HOSTED_VENDOR_CONSOLE_PORT-:9001}:9001
+      - ${STORAGE_SELF_HOSTED_VENDOR_API_PORT-:9000}:9000
+      - ${STORAGE_SELF_HOSTED_VENDOR_CONSOLE_PORT-:9001}:9001
     environment:
       TZ: ${TZ:-Asia/Shanghai}
-      RUSTFS_ACCESS_KEY: ${OBJECT_STORAGE_ACCESS_KEY}
-      RUSTFS_SECRET_KEY: ${OBJECT_STORAGE_SECRET_KEY}
+      RUSTFS_ACCESS_KEY: ${STORAGE_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${STORAGE_SECRET_KEY}
     volumes:
       - ./.docker/rustfs/data:/data
     restart: unless-stopped

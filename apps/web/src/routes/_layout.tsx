@@ -30,7 +30,7 @@ function Layout() {
             <Separator orientation="vertical" />
 
             <Avatar className="size-7.5">
-              <AvatarImage src="http://localhost:9001/yokg-public/IMG_3400.jpeg" />
+              <AvatarImage src="http://localhost:9000/yokg-public/avatar/019b5e84-b2fe-704b-8b42-8ad17bfe8d93.jpg" />
               <AvatarFallback>{"xqvvu".slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>

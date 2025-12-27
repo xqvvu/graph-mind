@@ -19,8 +19,8 @@ import type {
   GeneratePublicGetUrlResult,
   GetObjectMetaDataParams,
   GetObjectMetaDataResult,
-  ListObjectsParams,
-  ListObjectsResult,
+  ListAllObjectKeysParams,
+  ListAllObjectKeysResult,
   UploadObjectParams,
   UploadObjectResult,
 } from "./types";
@@ -82,9 +82,9 @@ export interface IStorage {
   deleteObjectByPrefix(params: DeleteObjectByPrefixParams): Promise<DeleteObjectByPrefixResult>;
 
   /**
-   * 列出 bucket 中的对象
+   * 列出 bucket 中的对象键（不分页）
    */
-  listObjects(params?: ListObjectsParams): Promise<ListObjectsResult>;
+  listAllObjectKeys(params?: ListAllObjectKeysParams): Promise<ListAllObjectKeysResult>;
 
   /**
    * 获取对象的元数据信息

@@ -1,28 +1,35 @@
 import { isNil, isNotNil } from "es-toolkit";
+import { getErrorMessage } from "@/errors";
+import { getLogger, infra } from "@/infra/logger";
+import { AwsS3ExtendedAdapter } from "@/infra/storage/adapters/aws-s3.extended.adapter";
 import { getConfig } from "@/lib/config";
 import { AwsS3Adapter } from "./adapters/aws-s3.adapter";
 import { MemoryAdapter } from "./adapters/memory.adapter";
 import { MinioAdapter } from "./adapters/minio.adapter";
 import { RustFsAdapter } from "./adapters/rustfs.adapter";
-import type { IStorage, IStorageOptions } from "./interface";
+import type { IStorage } from "./interface";
 
-let storageClient: IStorage | null = null;
+let publicStorageClient: IStorage | null = null;
+let privateStorageClient: IStorage | null = null;
 
 /**
  * 创建存储适配器实例
  */
-function createStorageAdapter(options: IStorageOptions): IStorage {
-  switch (options.vendor) {
+function createStorageAdapter(
+  vendor: ReturnType<typeof getConfig>["storage"]["vendor"],
+  bucketName: string,
+): IStorage {
+  switch (vendor) {
     case "aws-s3": {
-      return new AwsS3Adapter(options);
+      return new AwsS3Adapter(bucketName);
     }
 
     case "rustfs": {
-      return new RustFsAdapter(options);
+      return new RustFsAdapter(bucketName);
     }
 
     case "minio": {
-      return new MinioAdapter(options);
+      return new MinioAdapter(bucketName);
     }
 
     case "r2": {
@@ -38,11 +45,11 @@ function createStorageAdapter(options: IStorageOptions): IStorage {
     }
 
     case "memory": {
-      return new MemoryAdapter(options);
+      return new MemoryAdapter();
     }
 
     default: {
-      throw new Error(`Unsupported storage vendor: ${options.vendor}`);
+      throw new Error(`Unsupported storage vendor: ${vendor}`);
     }
   }
 }
@@ -51,31 +58,56 @@ function createStorageAdapter(options: IStorageOptions): IStorage {
  * 配置存储实例，使用 internalEndpoint 创建主实例
  */
 export async function configureStorage() {
-  if (isNil(storageClient)) {
+  const logger = getLogger(infra.storage);
+
+  if (isNil(publicStorageClient) || isNil(privateStorageClient)) {
     const { storage } = getConfig();
 
-    // 使用 internal endpoint 创建主实例（用于服务端操作）
-    const options: IStorageOptions = {
-      vendor: storage.vendor,
-      endpoint: storage.options.internalEndpoint,
-      region: storage.options.region,
-      forcePathStyle: storage.options.forcePathStyle,
-      accessKeyId: storage.options.accessKeyId,
-      secretAccessKey: storage.options.secretAccessKey,
-    };
+    publicStorageClient = createStorageAdapter(storage.vendor, storage.options.publicBucketName);
+    privateStorageClient = createStorageAdapter(storage.vendor, storage.options.privateBucketName);
 
-    storageClient = createStorageAdapter(options);
+    try {
+      await publicStorageClient.ensureBucket();
+      if (publicStorageClient instanceof AwsS3ExtendedAdapter) {
+        await publicStorageClient.ensurePublicBucketPolicy();
+      }
+      logger.info(`Ensure Bucket ${storage.options.publicBucketName}`);
+    } catch (error) {
+      const message = getErrorMessage(error);
+      logger.error(`Ensure Bucket ${storage.options.publicBucketName} failed: ${message}`);
+    }
+
+    try {
+      await privateStorageClient.ensureBucket();
+      if (privateStorageClient instanceof AwsS3ExtendedAdapter) {
+        await privateStorageClient.ensurePublicBucketPolicy();
+      }
+      logger.info(`Ensure Bucket ${storage.options.privateBucketName}`);
+    } catch (error) {
+      const message = getErrorMessage(error);
+      logger.error(`Ensure Bucket ${storage.options.privateBucketName} failed: ${message}`);
+    }
   }
 }
 
 /**
- * 获取存储实例，用于服务端操作
+ * 获取公共 bucket 的存储实例
  */
-export function getStorage() {
-  if (isNil(storageClient)) {
+export function getPublicStorage() {
+  if (isNil(publicStorageClient)) {
     throw new Error("Storage is not ready");
   }
-  return storageClient;
+  return publicStorageClient;
+}
+
+/**
+ * 获取私有 bucket 的存储实例
+ */
+export function getPrivateStorage() {
+  if (isNil(privateStorageClient)) {
+    throw new Error("Storage is not ready");
+  }
+  return privateStorageClient;
 }
 
 /**
@@ -101,8 +133,12 @@ export function getEndpoints() {
 }
 
 export async function destroyStorage() {
-  if (isNotNil(storageClient)) {
-    storageClient.destroy();
-    storageClient = null;
+  if (isNotNil(publicStorageClient)) {
+    publicStorageClient.destroy();
+    publicStorageClient = null;
+  }
+  if (isNotNil(privateStorageClient)) {
+    privateStorageClient.destroy();
+    privateStorageClient = null;
   }
 }

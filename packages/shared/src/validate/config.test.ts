@@ -342,7 +342,7 @@ describe("ConfigInitSchema", () => {
     it("should apply default POSTGRES_DB when missing", () => {
       processEnv = omit(processEnv, ["POSTGRES_DB"]);
       const result = ConfigInitSchema.parse(processEnv);
-      expect(result.POSTGRES_DB).toBe("core");
+      expect(result.POSTGRES_DB).toBe("yokg");
     });
 
     it("should apply default POSTGRES_USER when missing", () => {
@@ -684,7 +684,7 @@ describe("ConfigInitSchema", () => {
       expect(result.CORS_ALLOWED_ORIGINS).toEqual([]);
       expect(result.POSTGRES_PORT).toBe(5432);
       expect(result.POSTGRES_HOST).toBe("localhost");
-      expect(result.POSTGRES_DB).toBe("core");
+      expect(result.POSTGRES_DB).toBe("yokg");
       expect(result.POSTGRES_USER).toBe("postgres");
       expect(result.GRAPH_DB_VENDOR).toBe("age");
       expect(result.AGE_PORT).toBe(5455);

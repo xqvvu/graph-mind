@@ -7,7 +7,8 @@ export {
   destroyStorage,
   getBucketNames,
   getEndpoints,
-  getStorage,
+  getPrivateStorage,
+  getPublicStorage,
 } from "./client";
 export { getStorageLogger } from "./helpers";
 export type { IStorage } from "./interface";

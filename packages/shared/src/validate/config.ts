@@ -19,7 +19,7 @@ export const ConfigInitSchema = z.object({
   // PostgreSQL
   POSTGRES_PORT: PortSchema.default(5432),
   POSTGRES_HOST: z.string().default("localhost"),
-  POSTGRES_DB: z.string().default("core"),
+  POSTGRES_DB: z.string().default("yokg"),
   POSTGRES_USER: z.string().default("postgres"),
   POSTGRES_PASSWORD: z.string().nonempty(),
 
